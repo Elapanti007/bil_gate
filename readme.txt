@@ -1,3 +1,59 @@
+# Predefined lists of valid metadata attributes
+valid_authors = ["Not available", "Bharti Airtel Limited"]
+valid_creators = [
+    "Chromiue", "Bharti Airtel Limited",
+    "JasperReports Library version 6.14.0-2ab0d8625be255bf609c78e1181801213e51db8f",
+    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Mobile Safari/537.36",
+    "dvips(k) S.95a Copyright 2005 Radical Eye Software", "Not available"
+]
+valid_producers = [
+    "GPL Ghostscript 8.78", "Skia/PDF #119",
+    "OpenPDF 1.3.28", "Not available",
+    "1Text 2.1.7 by 1T3XT; modified using iText 7.1.12 02000-2020 1Text Group IV (AGPL-version)"
+]
+
+def check_metadata(metadata):
+    # Extracting necessary metadata fields
+    author = metadata.get('Author', 'Not available')
+    creator = metadata.get('Creator', 'Not available')
+    producer = metadata.get('Producer', 'Not available')
+    creation_date = metadata.get('CreationDate', '')
+    mod_date = metadata.get('ModDate', '')
+
+    # Initialize a list to store failure reasons
+    failure_reasons = []
+
+    # Checking metadata validity
+    dates_match = creation_date == mod_date
+    author_ok = author in valid_authors
+    creator_ok = creator in valid_creators
+    producer_ok = producer in valid_producers
+
+    # Check each condition and add failure reason if necessary
+    if not dates_match:
+        failure_reasons.append("Creation and modification dates do not match")
+    if not author_ok:
+        failure_reasons.append(f"Invalid author: {author}")
+    if not creator_ok:
+        failure_reasons.append(f"Invalid creator: {creator}")
+    if not producer_ok:
+        failure_reasons.append(f"Invalid producer: {producer}")
+
+    # Return overall result and failure reasons
+    return author_ok and creator_ok and producer_ok and dates_match, failure_reasons
+
+# Example usage
+metadata_example = {
+    'Author': 'Bharti Airtel Limited',
+    'Creator': 'Invalid Creator',
+    'Producer': 'GPL Ghostscript 8.78',
+    'CreationDate': '20230101',
+    'ModDate': '20230101'
+}
+
+result, reasons = check_metadata(metadata_example)
+print("Check result:", result)
+print("Failure reasons:", reasons)
 
 
 import os
